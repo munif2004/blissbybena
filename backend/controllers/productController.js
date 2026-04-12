@@ -6,8 +6,14 @@ const formatProductData = (product) => {
 
   const baseURL = process.env.BASE_URL || 'http://localhost:5000';
 
-  if (productObj.image && !productObj.image.startsWith('http')) {
-    productObj.image = `${baseURL}/uploads/${productObj.image}`;
+  if (productObj.image) {
+    // 🔥 REMOVE duplicate "uploads/"
+    const cleanImage = productObj.image.replace(/^uploads\//, '');
+
+    // If already full URL → keep it
+    if (!productObj.image.startsWith('http')) {
+      productObj.image = `${baseURL}/uploads/${cleanImage}`;
+    }
   }
 
   return productObj;
@@ -73,17 +79,16 @@ exports.getProduct = async (req, res, next) => {
   }
 };
 
-// Create product (Admin only)
+// Create product
 exports.createProduct = async (req, res, next) => {
   try {
     const productData = req.body;
 
-    // Convert number fields
     if (productData.price) productData.price = parseFloat(productData.price);
     if (productData.stock) productData.stock = parseInt(productData.stock);
     if (productData.featured) productData.featured = productData.featured === 'true';
 
-    // ✅ FIXED IMAGE SAVE
+    // ✅ SAVE ONLY filename
     if (req.file) {
       productData.image = req.file.filename;
     }
@@ -99,7 +104,7 @@ exports.createProduct = async (req, res, next) => {
   }
 };
 
-// Update product (Admin only)
+// Update product
 exports.updateProduct = async (req, res, next) => {
   try {
     let product = await Product.findById(req.params.id);
@@ -113,13 +118,12 @@ exports.updateProduct = async (req, res, next) => {
 
     const updateData = req.body;
 
-    // Convert number fields
     if (updateData.price) updateData.price = parseFloat(updateData.price);
     if (updateData.stock) updateData.stock = parseInt(updateData.stock);
     if (updateData.featured !== undefined)
       updateData.featured = updateData.featured === 'true';
 
-    // ✅ FIXED IMAGE SAVE
+    // ✅ SAVE ONLY filename
     if (req.file) {
       updateData.image = req.file.filename;
     }
