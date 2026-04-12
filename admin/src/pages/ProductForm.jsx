@@ -63,12 +63,28 @@ export default function ProductForm() {
     setSubmitting(true);
 
     try {
+      // Validate required fields
+      if (!formData.name || !formData.description || !formData.price || !formData.stock) {
+        showToast('Please fill all required fields', 'error');
+        setSubmitting(false);
+        return;
+      }
+
+      if (!id && !imageFile) {
+        showToast('Please upload a product image', 'error');
+        setSubmitting(false);
+        return;
+      }
+
       const data = new FormData();
 
-      // Add form fields
-      Object.keys(formData).forEach((key) => {
-        data.append(key, formData[key]);
-      });
+      // Add form fields with proper types
+      data.append('name', formData.name);
+      data.append('description', formData.description);
+      data.append('price', parseFloat(formData.price));
+      data.append('stock', parseInt(formData.stock));
+      data.append('category', formData.category);
+      data.append('featured', formData.featured);
 
       // Add image file if selected
       if (imageFile) {
@@ -86,7 +102,7 @@ export default function ProductForm() {
       navigate('/admin/products');
     } catch (error) {
       console.error('Error saving product:', error);
-      showToast('Failed to save product', 'error');
+      showToast(error.response?.data?.message || 'Failed to save product', 'error');
     } finally {
       setSubmitting(false);
     }
