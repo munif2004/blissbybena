@@ -3,9 +3,13 @@ const Product = require('../models/Product');
 // Helper function to format image URL
 const formatProductData = (product) => {
   const productObj = product.toObject ? product.toObject() : product;
+
+  const baseURL = process.env.BASE_URL || 'http://localhost:5000';
+
   if (productObj.image && !productObj.image.startsWith('http')) {
-    productObj.image = `${process.env.BASE_URL}/uploads/${productObj.image}`;
+    productObj.image = `${baseURL}/uploads/${productObj.image}`;
   }
+
   return productObj;
 };
 
@@ -79,9 +83,9 @@ exports.createProduct = async (req, res, next) => {
     if (productData.stock) productData.stock = parseInt(productData.stock);
     if (productData.featured) productData.featured = productData.featured === 'true';
 
-    // Add image path if file was uploaded
+    // ✅ FIXED IMAGE SAVE
     if (req.file) {
-      productData.image = `uploads/${req.file.filename}`;
+      productData.image = req.file.filename;
     }
 
     const product = await Product.create(productData);
@@ -112,11 +116,12 @@ exports.updateProduct = async (req, res, next) => {
     // Convert number fields
     if (updateData.price) updateData.price = parseFloat(updateData.price);
     if (updateData.stock) updateData.stock = parseInt(updateData.stock);
-    if (updateData.featured !== undefined) updateData.featured = updateData.featured === 'true';
+    if (updateData.featured !== undefined)
+      updateData.featured = updateData.featured === 'true';
 
-    // Update image path if new file was uploaded
+    // ✅ FIXED IMAGE SAVE
     if (req.file) {
-      updateData.image = `uploads/${req.file.filename}`;
+      updateData.image = req.file.filename;
     }
 
     product = await Product.findByIdAndUpdate(req.params.id, updateData, {
@@ -133,7 +138,7 @@ exports.updateProduct = async (req, res, next) => {
   }
 };
 
-// Delete product (Admin only)
+// Delete product
 exports.deleteProduct = async (req, res, next) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);

@@ -15,7 +15,21 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'https://blissbybena.netlify.app',
+    'https://blissbybena-admin.netlify.app',
+    process.env.FRONTEND_URL,
+    process.env.ADMIN_URL,
+  ],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));

@@ -192,7 +192,6 @@ export default function ProductForm() {
               accept="image/*"
               onChange={handleImageChange}
               required={!id}
-              
               className="w-full px-4 py-2 border border-sage-200 rounded-lg focus:outline-none focus:border-sage-500"
             />
             {preview && (
