@@ -4,7 +4,7 @@ const Product = require('../models/Product');
 const formatProductData = (product) => {
   const productObj = product.toObject ? product.toObject() : product;
   if (productObj.image && !productObj.image.startsWith('http')) {
-    productObj.image = `http://localhost:5000/${productObj.image}`;
+    productObj.image = `${process.env.BASE_URL}/uploads/${productObj.image}`;
   }
   return productObj;
 };
