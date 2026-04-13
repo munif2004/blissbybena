@@ -10,11 +10,12 @@ export default function ProductCard({ product }) {
 
   return (
     <div className="bg-bliss-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
+      
       {/* Image */}
       <Link to={`/product/${product._id}`}>
         <div className="relative h-64 bg-sage-100 overflow-hidden">
           <img
-            src={product.image}
+            src={`https://blissbybena.onrender.com/${product.image}`}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -39,7 +40,7 @@ export default function ProductCard({ product }) {
 
         <div className="flex justify-between items-center">
           <span className="font-serif text-xl text-sage-700">
-          ₨{Number(product.price).toLocaleString()}
+            ₨{Number(product.price).toLocaleString()}
           </span>
 
           <button
