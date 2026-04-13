@@ -1,22 +1,8 @@
 const Product = require('../models/Product');
 
-// Helper function to format image URL
+// ✅ Clean formatter (no uploads logic)
 const formatProductData = (product) => {
-  const productObj = product.toObject ? product.toObject() : product;
-
-  const baseURL = process.env.BASE_URL || 'http://localhost:5000';
-
-  if (productObj.image) {
-    // 🔥 REMOVE duplicate "uploads/"
-    const cleanImage = productObj.image.replace(/^uploads\//, '');
-
-    // If already full URL → keep it
-    if (!productObj.image.startsWith('http')) {
-      productObj.image = `${baseURL}/uploads/${cleanImage}`;
-    }
-  }
-
-  return productObj;
+  return product.toObject ? product.toObject() : product;
 };
 
 // Get all products
@@ -86,11 +72,12 @@ exports.createProduct = async (req, res, next) => {
 
     if (productData.price) productData.price = parseFloat(productData.price);
     if (productData.stock) productData.stock = parseInt(productData.stock);
-    if (productData.featured) productData.featured = productData.featured === 'true';
+    if (productData.featured)
+      productData.featured = productData.featured === 'true';
 
-    // ✅ SAVE ONLY filename
+    // ✅ SAVE CLOUDINARY URL
     if (req.file) {
-      productData.image = req.file.filename;
+      productData.image = req.file.path;
     }
 
     const product = await Product.create(productData);
@@ -123,9 +110,9 @@ exports.updateProduct = async (req, res, next) => {
     if (updateData.featured !== undefined)
       updateData.featured = updateData.featured === 'true';
 
-    // ✅ SAVE ONLY filename
+    // ✅ Only update image if new file uploaded
     if (req.file) {
-      updateData.image = req.file.filename;
+      updateData.image = req.file.path;
     }
 
     product = await Product.findByIdAndUpdate(req.params.id, updateData, {
