@@ -10,10 +10,15 @@ export default function ProductCard({ product }) {
     showToast(`${product?.name} added to cart!`);
   };
 
-  // ✅ Fix image path safely
-  const imageUrl = product?.image
-    ? `${BASE_URL}/${product.image.replace(/^\/+/, '')}`
-    : '/placeholder.jpg'; // fallback image
+  // ✅ Safe image URL handling
+  const getImageUrl = () => {
+    if (!product?.image) return '/placeholder.jpg';
+
+    // remove leading slash if exists
+    const cleanPath = product.image.replace(/^\/+/, '');
+
+    return `${BASE_URL}/${cleanPath}`;
+  };
 
   return (
     <div className="bg-bliss-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
@@ -22,11 +27,12 @@ export default function ProductCard({ product }) {
       <Link to={`/product/${product?._id}`}>
         <div className="relative h-64 bg-sage-100 overflow-hidden">
           <img
-            src={imageUrl}
-            alt={product?.name}
+            src={getImageUrl()}
+            alt={product?.name || "Product Image"}
             onError={(e) => {
-              e.target.src = '/placeholder.jpg'; // fallback if image fails
+              e.target.src = '/placeholder.jpg';
             }}
+            loading="lazy" // ✅ performance improve
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
@@ -35,17 +41,17 @@ export default function ProductCard({ product }) {
       {/* Content */}
       <div className="p-4">
         <p className="text-xs text-sage-500 uppercase tracking-wider mb-2">
-          {product?.category}
+          {product?.category || "Category"}
         </p>
 
         <Link to={`/product/${product?._id}`}>
           <h3 className="font-serif text-lg text-sage-900 mb-2 hover:text-sage-700 transition">
-            {product?.name}
+            {product?.name || "Product Name"}
           </h3>
         </Link>
 
         <p className="text-sage-600 text-sm mb-4 line-clamp-2">
-          {product?.description}
+          {product?.description || "No description available"}
         </p>
 
         <div className="flex justify-between items-center">
