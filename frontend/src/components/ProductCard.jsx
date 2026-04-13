@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { cartStorage, showToast } from '../utils/helpers';
 
 export default function ProductCard({ product }) {
+  // ✅ Use environment variable (clean way)
+  const BASE_URL = import.meta.env.VITE_API_URL;
+
   const handleAddToCart = () => {
     cartStorage.add(product);
     showToast(`${product.name} added to cart!`);
@@ -15,7 +18,7 @@ export default function ProductCard({ product }) {
       <Link to={`/product/${product._id}`}>
         <div className="relative h-64 bg-sage-100 overflow-hidden">
           <img
-            src={`https://blissbybena.onrender.com/${product.image}`}
+            src={`${BASE_URL}/${product.image}`}   // ✅ FIXED
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
