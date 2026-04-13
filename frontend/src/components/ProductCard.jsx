@@ -3,22 +3,14 @@ import { Link } from 'react-router-dom';
 import { cartStorage, showToast } from '../utils/helpers';
 
 export default function ProductCard({ product }) {
-  const BASE_URL = import.meta.env.VITE_API_URL;
 
   const handleAddToCart = () => {
     cartStorage.add(product);
     showToast(`${product?.name} added to cart!`);
   };
 
-  // ✅ Safe image URL handling
-  const getImageUrl = () => {
-    if (!product?.image) return '/placeholder.jpg';
-
-    // remove leading slash if exists
-    const cleanPath = product.image.replace(/^\/+/, '');
-
-    return `${BASE_URL}/${cleanPath}`;
-  };
+  // ✅ FINAL IMAGE LOGIC (Cloudinary ready)
+  const imageUrl = product?.image || '/placeholder.jpg';
 
   return (
     <div className="bg-bliss-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group">
@@ -27,12 +19,12 @@ export default function ProductCard({ product }) {
       <Link to={`/product/${product?._id}`}>
         <div className="relative h-64 bg-sage-100 overflow-hidden">
           <img
-            src={getImageUrl()}
+            src={imageUrl}
             alt={product?.name || "Product Image"}
             onError={(e) => {
               e.target.src = '/placeholder.jpg';
             }}
-            loading="lazy" // ✅ performance improve
+            loading="lazy"
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
         </div>
